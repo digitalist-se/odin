@@ -118,10 +118,10 @@ trait HasUptime
             ->sortByDesc('created_at')
             ->take(25)
             ->transform(function (UptimeScan $scan) {
-               return [
+                return [
                    'date' => $scan->created_at,
                    'value' => $scan->response_time,
-               ];
+                ];
             })
             ->values();
     }
@@ -207,7 +207,8 @@ trait HasUptime
                 $last = end($grouped);
                 $last->push($event);
             }
-            // if its a different event, we start a new group!
+            
+            // If it's a different event, we start a new group!
             else {
                 $lastType = $event->online;
                 $grouped[] = collect();

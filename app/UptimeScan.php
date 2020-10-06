@@ -21,5 +21,4 @@ class UptimeScan extends Model
     {
         return $this->was_online;
     }
-
 }

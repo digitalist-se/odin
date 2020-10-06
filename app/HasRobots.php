@@ -18,5 +18,4 @@ trait HasRobots
     {
         return $this->url . '/robots.txt';
     }
-
 }
