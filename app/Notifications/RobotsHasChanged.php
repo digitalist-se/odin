@@ -5,6 +5,7 @@ namespace App\Notifications;
 use App\Website;
 use App\RobotScan;
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Messages\SlackMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -42,7 +43,7 @@ class RobotsHasChanged extends Notification
      */
     public function via($notifiable)
     {
-        return ['database', 'mail'];
+        return ['database', 'mail', 'slack'];
     }
 
     /**
@@ -59,6 +60,20 @@ class RobotsHasChanged extends Notification
                 'website' => $this->website,
                 'scan' => $this->scan,
             ]);
+    }
+
+    /**
+     * Get the Slack representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return SlackMessage
+     */
+    public function toSlack($notifiable)
+    {
+        return (new SlackMessage)
+            ->from('Odin', ':scream:')
+            ->to(env('SLACK_CHANNEL') ?? '')
+            ->content('🤖 Change detected on: ' . $this->website->url);
     }
 
     /**

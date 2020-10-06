@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Website;
 use Illuminate\Bus\Queueable;
+use Illuminate\Notifications\Messages\SlackMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -35,7 +36,7 @@ class WebsiteIsBackUp extends Notification
      */
     public function via($notifiable)
     {
-        return ['mail', 'database'];
+        return ['mail', 'database', 'slack'];
     }
 
     /**
@@ -50,6 +51,21 @@ class WebsiteIsBackUp extends Notification
             ->subject('🎉 Website Back Online: ' . $this->website->url)
             ->markdown('mail.website-up', ['website' => $this->website]);
     }
+
+    /**
+     * Get the Slack representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return SlackMessage
+     */
+    public function toSlack($notifiable)
+    {
+        return (new SlackMessage)
+            ->from('Odin', ':scream:')
+            ->to(env('SLACK_CHANNEL') ?? '')
+            ->content('🎉 Website Back Online: ' . $this->website->url);
+    }
+
 
     /**
      * Get the array representation of the notification.
