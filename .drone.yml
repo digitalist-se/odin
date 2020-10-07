@@ -24,7 +24,7 @@ pipeline:
 
   notifyrc_success:
     image: plugins/slack
-    webhook: https://hooks.slack.com/services/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
+    webhook: ${{SLACK_HOOK}}
     channel: container-scan
     icon_emoji: ":drone:"
     template: >
@@ -35,7 +35,7 @@ pipeline:
       status: [ success ]
   notifyrc_failure:
     image: plugins/slack
-    webhook: https://hooks.slack.com/services/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
+    webhook: ${{SLACK_HOOK}}
     channel: container-scan
     icon_emoji: ":drone-error:"
     template: >
