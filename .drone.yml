@@ -1,0 +1,47 @@
+pipeline:
+  docker:
+    image: plugins/docker
+    registry: registry.wklive.net:5000
+    repo: registry.wklive.net:5000/dg/odin
+    dockerfile: Dockerfile
+    experimental: true
+    squash: true
+    prune: 0
+    privileged: true
+    storage_path: /drone/docker-storage
+    #storage_driver: overlay
+    secrets: [ docker_username, docker_password ]
+    #debug: true
+    tags:
+      - ${DRONE_BRANCH}-${DRONE_COMMIT}
+      - latest
+
+  clair:
+    image: digitalist/drone-clair:latest
+    url: https://clair.dgstage.se:443
+    secrets: [ docker_username, docker_password ]
+    scan_image: registry.wklive.net:5000/dg/odin:${DRONE_BRANCH}-${DRONE_COMMIT}
+
+  notifyrc_success:
+    image: plugins/slack
+    webhook: https://hooks.slack.com/services/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
+    channel: container-scan
+    icon_emoji: ":drone:"
+    template: >
+      *{{build.status}}*
+      <{{build.link}}|{{repo.owner}}/{{repo.name}}#{{truncate build.commit 8}}> ({{build.branch}})
+       by {{build.author}} <https://reports.clair.dgstage.se/repo/dg%2Fodin/tag/${DRONE_BRANCH}-${DRONE_COMMIT}/vulns|View Report>
+    when:
+      status: [ success ]
+  notifyrc_failure:
+    image: plugins/slack
+    webhook: https://hooks.slack.com/services/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
+    channel: container-scan
+    icon_emoji: ":drone-error:"
+    template: >
+      *{{build.status}}*
+      <{{build.link}}|{{repo.owner}}/{{repo.name}}#{{truncate build.commit 8}}> ({{build.branch}})
+       by {{build.author}} <https://reports.clair.dgstage.se/repo/dg%2Fodin/tag/${DRONE_BRANCH}-${DRONE_COMMIT}/vulns|View Report>
+    when:
+      status: [ failure ]
+
