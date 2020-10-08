@@ -1,7 +1,7 @@
 FROM php:7.3-fpm
 
 COPY . /usr/src/app/
-
+WORKDIR /usr/src/app
 ENV DOCKERIZE_VERSION 0.6.1
 
 # Install dockerize, maybe use it later on.
@@ -52,10 +52,10 @@ RUN apt-get update && apt-get install -y nodejs gconf-service libasound2 libatk1
 	&& npm install --global --unsafe-perm puppeteer \
 	&& chmod -R o+rx /usr/lib/node_modules/puppeteer/.local-chromium \
         && rm -rf /var/lib/apt/lists/*;
-
-
 # Install composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-RUN chown -R www-data:www-data /usr/src/app/
+RUN composer install
 
+RUN chown -R www-data:www-data /usr/src/app/ \
+	&& npm install
 COPY .docker/laravel.ini /usr/local/etc/php/conf.d/laravel.ini
