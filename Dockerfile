@@ -57,5 +57,6 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 RUN composer install
 
 RUN chown -R www-data:www-data /usr/src/app/ \
-	&& npm install
+	&& npm install \
+        && npm run prod 
 COPY .docker/laravel.ini /usr/local/etc/php/conf.d/laravel.ini
